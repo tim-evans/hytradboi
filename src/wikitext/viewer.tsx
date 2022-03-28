@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import { fromRaw } from ".";
+import { fromWikitext } from ".";
 import Renderer, { ReactRendererProvider } from "./renderer";
-import * as components from "./components";
+import * as allComponents from "./components";
 import { Button, ViewSourceIcon, RichTextIcon } from "../components";
 
 const Title = styled.h1`
@@ -50,19 +50,16 @@ export function WikiText() {
         if (!unmounted) {
           setTitle(json.parse.title);
           document.title = `${json.parse.title} | Wikipedia`;
-          fromRaw(json.parse.wikitext["*"]).then((doc) => {
-            if (!unmounted) {
-              console.log(doc.canonical());
-              console.log(doc);
-              setAtjson(doc);
-            }
-          });
+          let doc = fromWikitext(json.parse.wikitext["*"]);
+          setAtjson(doc);
+          console.log(doc);
         }
       });
     return () => {
       unmounted = true;
     };
   }, [slug]);
+  let { Default, ...components } = allComponents;
 
   return (
     <Main>
@@ -80,8 +77,12 @@ export function WikiText() {
       {view === "source" && atjson && (
         <ReactRendererProvider
           value={{
-            ParseToken: components.ParseToken,
-            Default: components.Default,
+            ParseToken: allComponents.ParseToken,
+            Default: allComponents.Default,
+            Wikilink:
+              "Wikilink" in allComponents
+                ? allComponents.Wikilink
+                : allComponents.Default,
           }}
         >
           <Title>
