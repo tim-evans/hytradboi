@@ -34,6 +34,32 @@ export function exposeLinkText(doc: Document) {
           ? maybeContent[maybeContent.length - 1]
           : hrefs[0];
 
+      // Let's handle the pipe trick as well.
+      if (maybeContent.length > 0) {
+        let sliceText = doc.content.slice(slice.start, slice.end).trim();
+        // This is a pipe trick, which has a bunch of rules
+        // as to how to handle the text.
+        // We'll _not_ be using maybeContent here,
+        // and instead, will be using
+        // offsets in the href slice
+        if (sliceText === "*" || sliceText === "") {
+          slice = hrefs[0].clone();
+          let startMatches = doc.match(/:/, slice.start, slice.end);
+          if (startMatches.length) {
+            slice.start = startMatches[0].end;
+          }
+          let endMatches = doc.match(/,/, slice.start, slice.end);
+          if (endMatches.length) {
+            slice.end = endMatches[0].start;
+          } else {
+            endMatches = doc.match(/\s+\(/, slice.start, slice.end);
+            if (endMatches.length) {
+              slice.end = endMatches[0].start;
+            }
+          }
+        }
+      }
+
       // At this point, we only have one token
       let token = tokens[0];
       doc.replaceAnnotation(
