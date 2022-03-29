@@ -15,6 +15,7 @@ export function stampInHrefToWikilink(doc: Document) {
       doc.replaceAnnotation(
         wikilink,
         new schema.Wikilink({
+          id: wikilink.id,
           start: wikilink.start,
           end: wikilink.end,
           attributes: {

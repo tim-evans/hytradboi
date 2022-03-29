@@ -3,6 +3,7 @@ import { exposeLinkText } from "./1_exposeLinkText";
 import { stampInHrefToWikilink } from "./2_stampInHrefToWikilink";
 import { extendWikilinkEnd } from "./3_extendWikilinkEnd";
 import { unmarkInvalidExtlinks } from "./4_unmarkInvalidExtlinks";
+import { handleCategoryLinks } from "./5_handleCategoryLinks";
 
 export default function (doc: Document) {
   // We'll add a series of migrations
@@ -14,6 +15,7 @@ export default function (doc: Document) {
   stampInHrefToWikilink(doc);
   extendWikilinkEnd(doc);
   unmarkInvalidExtlinks(doc);
+  handleCategoryLinks(doc);
 
   return doc;
 }

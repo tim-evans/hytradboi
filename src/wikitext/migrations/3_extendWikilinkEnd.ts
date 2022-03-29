@@ -20,6 +20,7 @@ export function extendWikilinkEnd(doc: Document) {
         doc.replaceAnnotation(
           wikilink,
           new schema.Wikilink({
+            id: wikilink.id,
             start: wikilink.start,
             end: matches[0].end,
             attributes: {
