@@ -52,7 +52,7 @@ export function WikiText() {
           document.title = `${json.parse.title} | Wikipedia`;
           let doc = fromWikitext(json.parse.wikitext["*"]);
           setAtjson(doc);
-          console.log(doc);
+          console.log(doc.canonical());
         }
       });
     return () => {
