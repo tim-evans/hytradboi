@@ -1,13 +1,23 @@
-import { createElement, ComponentType } from "react";
+import { createElement, ComponentType, ReactNode } from "react";
 import { classify } from "@atjson/renderer-hir";
 import { HIR, HIRNode, TextAnnotation } from "@atjson/hir";
-import Document, { is } from "@atjson/document";
+import Document, { is, Annotation } from "@atjson/document";
 import {
   ReactRendererConsumer,
   ReactRendererProvider,
 } from "@atjson/renderer-react";
 
 export { ReactRendererProvider };
+
+export type PropsOf<AnnotationClass> = AnnotationClass extends Annotation<
+  infer Attributes
+>
+  ? {
+      [P in keyof Attributes]: Attributes[P] extends Document
+        ? React.ReactFragment
+        : Attributes[P];
+    } & { children?: ReactNode }
+  : never;
 
 function propsOf(attributes, slices, transformer) {
   if (Array.isArray(attributes)) {
