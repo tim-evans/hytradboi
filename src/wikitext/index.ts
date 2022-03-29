@@ -115,6 +115,36 @@ let handlers = {
       }),
     ];
   },
+  extlink(token) {
+    let [start, end] = token.dataAttribs.tsr;
+    let link = new schema.Extlink({
+      start,
+      end,
+      attributes: {
+        href: token.getAttribute("href"),
+      },
+    });
+    let [contentStart, contentEnd] = token.dataAttribs.extLinkContentOffsets;
+
+    return [
+      ...walk(token.getAttribute("mw:content")),
+      link,
+      new ParseAnnotation({
+        start,
+        end: contentStart,
+        attributes: {
+          reason: `${link.type}:${link.id}`,
+        },
+      }),
+      new ParseAnnotation({
+        start: contentEnd,
+        end,
+        attributes: {
+          reason: `${link.type}:${link.id}`,
+        },
+      }),
+    ];
+  },
 };
 
 function walk(tokens) {
