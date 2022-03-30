@@ -32,7 +32,7 @@ ${(props) =>
     props.$level === 4
       ? css`
           font-weight: bold;
-          font-size: 1rem;
+          font-size: 1em;
           margin-top: 0.3em;
           margin-bottom: 0;
           line-height: 1.6;
