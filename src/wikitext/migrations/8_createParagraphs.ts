@@ -7,7 +7,10 @@ import * as schema from "../annotations";
 export function createParagraphs(doc: Document) {
   let previous = null;
   doc
-    .where((annotation) => is(annotation, schema.Newline))
+    .where(
+      (annotation) =>
+        is(annotation, schema.Newline) && annotation.end - annotation.start >= 2
+    )
     .as("newline")
     .outerJoin(
       doc
