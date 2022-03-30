@@ -16,7 +16,6 @@ export function createParagraphs(doc: Document) {
     )
     .update(({ newline, blocks }) => {
       if (blocks.length === 0) {
-        doc.removeAnnotation(newline);
         if (previous == null) {
           doc.addAnnotations(
             new schema.Paragraph({

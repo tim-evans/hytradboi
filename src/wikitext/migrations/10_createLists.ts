@@ -49,36 +49,33 @@ export function createLists(doc: Document) {
     });
 
   let lines = doc
-    .where((annotation) => is(annotation, schema.ListItem))
-    .as("listItem")
+    .where((annotation) => is(annotation, schema.Newline))
+    .as("newline")
     .outerJoin(
-      doc.where((annotation) => is(annotation, schema.Newline)).as("newlines"),
-      (listItem, newline) => newline.start === listItem.end
+      doc
+        .where((annotation) => is(annotation, schema.ListItem))
+        .as("preceding"),
+      (newline, listItem) => listItem.end === newline.start
+    )
+    .outerJoin(
+      doc
+        .where((annotation) => is(annotation, schema.ListItem))
+        .as("proceeding"),
+      ({ newline }, listItem) => listItem.start === newline.end
     );
 
-  let [lastLine, ...subsequentLines] = lines;
-  let list = [lastLine];
-  for (let line of subsequentLines) {
-    if (line.listItem.start === lastLine.newlines[0].end) {
-      list.push(line);
-    } else {
+  let listStart = null;
+
+  for (let { preceding, proceeding } of lines) {
+    if (preceding.length === 0 && proceeding.length > 0) {
+      listStart = proceeding[0].start;
+    } else if (preceding.length > 0 && proceeding.length === 0) {
       doc.addAnnotations(
         new schema.List({
-          start: list[0].listItem.start,
-          end: list[list.length - 1].newlines[0].end,
+          start: listStart,
+          end: preceding[0].end,
         })
       );
-      list = [line];
     }
-    lastLine = line;
-  }
-
-  if (list.length) {
-    doc.addAnnotations(
-      new schema.List({
-        start: list[0].listItem.start,
-        end: list[list.length - 1].newlines[0].end,
-      })
-    );
   }
 }
