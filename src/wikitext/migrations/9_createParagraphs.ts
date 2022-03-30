@@ -7,21 +7,17 @@ import * as schema from "../annotations";
 export function createParagraphs(doc: Document) {
   let previous = null;
   doc
-    .where(
-      (annotation) =>
-        is(annotation, schema.Newline) && annotation.end - annotation.start >= 2
-    )
+    .where((annotation) => is(annotation, schema.Newline))
     .as("newline")
     .outerJoin(
       doc
         .where((annotation) => annotation instanceof BlockAnnotation)
         .as("blocks"),
-      (newline, block) => newline.end === block.start
+      (newline, block) => newline.start === block.end
     )
     .update(({ newline, blocks }) => {
-      doc.removeAnnotation(newline);
-      console.log(newline, previous);
       if (blocks.length === 0) {
+        doc.removeAnnotation(newline);
         if (previous == null) {
           doc.addAnnotations(
             new schema.Paragraph({

@@ -154,6 +154,23 @@ let handlers = {
       }),
     ];
   },
+  listItem(token) {
+    let [start, end] = token.dataAttribs.tsr;
+    let listItem = new schema.ListItem({
+      start,
+      end,
+    });
+    return [
+      listItem,
+      new ParseAnnotation({
+        start,
+        end,
+        attributes: {
+          reason: `${listItem.type}:${listItem.id}`,
+        },
+      }),
+    ];
+  },
 };
 
 function walk(tokens) {

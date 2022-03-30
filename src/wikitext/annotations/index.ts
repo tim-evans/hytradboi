@@ -6,3 +6,5 @@ export * from "./File";
 export * from "./Image";
 export * from "./Newline";
 export * from "./Paragraph";
+export * from "./List";
+export * from "./ListItem";

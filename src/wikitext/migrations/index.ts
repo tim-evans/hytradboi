@@ -6,7 +6,8 @@ import { unmarkInvalidExtlinks } from "./4_unmarkInvalidExtlinks";
 import { handleCategoryLinks } from "./5_handleCategoryLinks";
 import { unmarkFilesAndImages } from "./6_unmarkFilesAndImages";
 import { combineNewlines } from "./7_combineNewlines";
-import { createParagraphs } from "./8_createParagraphs";
+import { createLists } from "./8_createLists";
+import { createParagraphs } from "./9_createParagraphs";
 
 export default function (doc: Document) {
   // We'll add a series of migrations
@@ -21,6 +22,7 @@ export default function (doc: Document) {
   handleCategoryLinks(doc);
   unmarkFilesAndImages(doc);
   combineNewlines(doc);
+  createLists(doc);
   createParagraphs(doc);
 
   return doc;
