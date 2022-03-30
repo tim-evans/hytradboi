@@ -37,25 +37,34 @@ export default class WikiText extends Document {
 }
 
 let handlers = {
+  NlTk(token) {
+    let [start, end] = token.dataAttribs.tsr;
+    return [
+      new schema.Newline({
+        start,
+        end,
+      }),
+    ];
+  },
+  EOFTk() {
+    return [];
+  },
   default(token) {
     // Let's mark syntax as semantic
     // rather than textual
-    if (token.dataAttribs?.tsr) {
-      // There's offset positions,
-      // which indicates that it's a node
-      // that has some syntatical relevance.
-      let [start, end] = token.dataAttribs.tsr;
-      return [
-        // The parse annotation
-        // is used in atjson to indicate
-        // syntatical parts of the text.
-        new ParseAnnotation({
-          start,
-          end,
-        }),
-      ];
-    }
-    return [];
+    // There's offset positions,
+    // which indicates that it's a node
+    // that has some syntatical relevance.
+    let [start, end] = token.dataAttribs.tsr;
+    return [
+      // The parse annotation
+      // is used in atjson to indicate
+      // syntatical parts of the text.
+      new ParseAnnotation({
+        start,
+        end,
+      }),
+    ];
   },
   // now we'll continue to handle wikilinks
   wikilink(token) {

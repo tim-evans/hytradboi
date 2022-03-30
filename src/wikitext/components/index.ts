@@ -3,3 +3,4 @@ export * from "./Default";
 
 export * from "./Wikilink";
 export * from "./Extlink";
+export * from "./Paragraph";

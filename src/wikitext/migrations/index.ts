@@ -5,6 +5,8 @@ import { extendWikilinkEnd } from "./3_extendWikilinkEnd";
 import { unmarkInvalidExtlinks } from "./4_unmarkInvalidExtlinks";
 import { handleCategoryLinks } from "./5_handleCategoryLinks";
 import { unmarkFilesAndImages } from "./6_unmarkFilesAndImages";
+import { combineNewlines } from "./7_combineNewlines";
+import { createParagraphs } from "./8_createParagraphs";
 
 export default function (doc: Document) {
   // We'll add a series of migrations
@@ -18,6 +20,8 @@ export default function (doc: Document) {
   unmarkInvalidExtlinks(doc);
   handleCategoryLinks(doc);
   unmarkFilesAndImages(doc);
+  combineNewlines(doc);
+  createParagraphs(doc);
 
   return doc;
 }
