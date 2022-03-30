@@ -10,3 +10,4 @@ export * from "./List";
 export * from "./ListItem";
 export * from "./OpeningTag";
 export * from "./ClosingTag";
+export * from "./Heading";

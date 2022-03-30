@@ -9,6 +9,7 @@ import { combineNewlines } from "./7_combineNewlines";
 import { closeTags } from "./8_closeTags";
 import { createParagraphs } from "./9_createParagraphs";
 import { createLists } from "./10_createLists";
+import { createHeadings } from "./11_createHeadings";
 
 export default function (doc: Document) {
   // We'll add a series of migrations
@@ -26,6 +27,9 @@ export default function (doc: Document) {
   closeTags(doc);
   createParagraphs(doc);
   createLists(doc);
+  createHeadings(doc, "h2", { level: 2 });
+  createHeadings(doc, "h3", { level: 3 });
+  createHeadings(doc, "h4", { level: 4 });
 
   return doc;
 }

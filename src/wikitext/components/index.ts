@@ -6,3 +6,4 @@ export * from "./Extlink";
 export * from "./Paragraph";
 export * from "./List";
 export * from "./ListItem";
+export * from "./Heading";
