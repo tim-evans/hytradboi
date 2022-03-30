@@ -43,12 +43,11 @@ function propsOf(attributes, slices, transformer) {
 
 function renderNode(props: {
   node: HIRNode;
-  ancestors: HIRNode[];
   includeParseTokens: boolean;
   slices: Record<string, Document>;
   key: string;
 }) {
-  let { node, ancestors, includeParseTokens, slices, key } = props;
+  let { node, includeParseTokens, slices, key } = props;
   let annotation = node.annotation;
   if (is(annotation, TextAnnotation)) {
     return node.text;
@@ -70,7 +69,6 @@ function renderNode(props: {
           includeParseTokens,
           slices,
           key: `${node.id}-${i}`,
-          ancestors: [...ancestors, node],
         });
       }
 
@@ -82,19 +80,11 @@ function renderNode(props: {
               return render({ document: doc, includeParseTokens, slices });
             }),
             annotation: {
+              id: annotation.id,
               type: annotation.type,
               start: annotation.start,
               end: annotation.end,
-            },
-            ancestors() {
-              return ancestors.map((ancestor) => ({
-                ...ancestor.annotation,
-                attributes: propsOf(
-                  ancestor.annotation.attributes,
-                  slices,
-                  (doc) => doc
-                ),
-              }));
+              attributes: propsOf(annotation.attributes, slices, (doc) => doc),
             },
           },
           ...children
@@ -138,7 +128,6 @@ function render(props: {
         includeParseTokens: includeParseTokens === true,
         slices,
         key: `${node.id}-${index}`,
-        ancestors: [],
       })
     );
 }

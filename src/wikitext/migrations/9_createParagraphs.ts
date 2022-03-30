@@ -10,10 +10,9 @@ export function createParagraphs(doc: Document) {
     .where((annotation) => is(annotation, schema.Newline))
     .as("newline")
     .outerJoin(
-      doc
-        .where((annotation) => annotation instanceof BlockAnnotation)
-        .as("blocks"),
-      (newline, block) => newline.start === block.end
+      doc.where((annotation) => is(annotation, schema.ClosingTag)).as("blocks"),
+      (newline, block) =>
+        newline.start === block.end || newline.start === block.start
     )
     .update(({ newline, blocks }) => {
       if (blocks.length === 0) {

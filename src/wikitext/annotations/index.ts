@@ -8,3 +8,5 @@ export * from "./Newline";
 export * from "./Paragraph";
 export * from "./List";
 export * from "./ListItem";
+export * from "./OpeningTag";
+export * from "./ClosingTag";

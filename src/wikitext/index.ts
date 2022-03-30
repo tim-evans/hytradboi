@@ -154,19 +154,46 @@ let handlers = {
       }),
     ];
   },
-  listItem(token) {
+  TagTk(token) {
     let [start, end] = token.dataAttribs.tsr;
-    let listItem = new schema.ListItem({
+    let attributes = token.attribs.reduce((E, attrib) => {
+      E[attrib.k] = attrib.v;
+    }, {});
+    let tag = new schema.OpeningTag({
       start,
       end,
+      attributes: {
+        name: token.name,
+        attributes,
+      },
     });
     return [
-      listItem,
+      tag,
       new ParseAnnotation({
         start,
         end,
         attributes: {
-          reason: `${listItem.type}:${listItem.id}`,
+          reason: `${tag.type}:${tag.id}`,
+        },
+      }),
+    ];
+  },
+  EndTagTk(token) {
+    let [start, end] = token.dataAttribs.tsr;
+    let tag = new schema.ClosingTag({
+      start,
+      end,
+      attributes: {
+        name: token.name,
+      },
+    });
+    return [
+      tag,
+      new ParseAnnotation({
+        start,
+        end,
+        attributes: {
+          reason: `${tag.type}:${tag.id}`,
         },
       }),
     ];
