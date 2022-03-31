@@ -158,6 +158,7 @@ let handlers = {
     let [start, end] = token.dataAttribs.tsr;
     let attributes = token.attribs.reduce((E, attrib) => {
       E[attrib.k] = attrib.v;
+      return E;
     }, {});
     let tag = new schema.OpeningTag({
       start,
