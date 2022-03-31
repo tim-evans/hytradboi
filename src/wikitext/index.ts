@@ -111,10 +111,10 @@ let handlers = {
     });
 
     return [
+      link,
       ...nestedAnnotations,
       hrefSlice,
       ...maybeContentSlices,
-      link,
       new ParseAnnotation({
         start,
         end,
@@ -136,8 +136,8 @@ let handlers = {
     let [contentStart, contentEnd] = token.dataAttribs.extLinkContentOffsets;
 
     return [
-      ...walk(token.getAttribute("mw:content")),
       link,
+      ...walk(token.getAttribute("mw:content")),
       new ParseAnnotation({
         start,
         end: contentStart,
@@ -263,6 +263,30 @@ let handlers = {
         end,
         attributes: {
           reason: `${tag.type}:${tag.id}`,
+        },
+      }),
+    ];
+  },
+  "mw:redirect"(token) {
+    let [start, end] = token.dataAttribs.tsr;
+    let annotations = handlers.wikilink(token.dataAttribs.linkTk);
+    let link = annotations[0];
+    let redirect = new schema.Redirect({
+      start,
+      end,
+      attributes: {
+        to: `${link.type}:${link.id}`,
+      },
+    });
+
+    return [
+      redirect,
+      ...annotations,
+      new ParseAnnotation({
+        start,
+        end,
+        attributes: {
+          reason: `${redirect.type}:${redirect.id}`,
         },
       }),
     ];

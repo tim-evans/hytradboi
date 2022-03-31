@@ -12,3 +12,4 @@ export * from "./OpeningTag";
 export * from "./ClosingTag";
 export * from "./Heading";
 export * from "./Template";
+export * from "./Redirect";
