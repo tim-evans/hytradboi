@@ -40,18 +40,17 @@ export function closeTags(doc: Document) {
         });
         doc.addAnnotations(closingTag);
       } else {
-        [closingTag] = doc.replaceAnnotation(
-          closingTag,
-          new schema.ClosingTag({
-            id: closingTag.id,
-            start: closingTag.start,
-            end: closingTag.end,
-            attributes: {
-              name: closingTag.attributes.name,
-              openingTag: `${openingTag.type}:${openingTag.id}`,
-            },
-          })
-        );
+        let newClosingTag = new schema.ClosingTag({
+          id: closingTag.id,
+          start: closingTag.start,
+          end: closingTag.end,
+          attributes: {
+            name: closingTag.attributes.name,
+            openingTag: `${openingTag.type}:${openingTag.id}`,
+          },
+        });
+        doc.replaceAnnotation(closingTag, newClosingTag);
+        closingTag = newClosingTag;
       }
 
       doc.replaceAnnotation(
