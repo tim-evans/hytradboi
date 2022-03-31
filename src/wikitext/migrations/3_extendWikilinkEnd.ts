@@ -5,7 +5,7 @@ export function extendWikilinkEnd(doc: Document) {
   doc
     .where((annotation) => is(annotation, schema.Wikilink))
     .as("wikilink")
-    .join(
+    .outerJoin(
       doc.where((annotation) => is(annotation, ParseAnnotation)).as("tokens"),
       (wikilink, token) => token.start >= wikilink.end
     )
@@ -15,7 +15,11 @@ export function extendWikilinkEnd(doc: Document) {
       // a wikilink with the text
       // "computing languages" and the href
       // computing_languages
-      let matches = doc.match(/^[a-zA-Z']+/, wikilink.end, tokens[0].start);
+      let matches = doc.match(
+        /^[a-zA-Z']+/,
+        wikilink.end,
+        tokens.length ? tokens[0].start : Infinity
+      );
       if (matches.length) {
         doc.replaceAnnotation(
           wikilink,
