@@ -154,6 +154,74 @@ let handlers = {
       }),
     ];
   },
+  template(token) {
+    // Templates may contain multiple
+    // bits that will get passed into
+    // the resulting template.
+    // To handle this flexibility,
+    // if a value of an attribute is an AST
+    // tree, we'll refer to that value
+    // as a slice
+    let [start, end] = token.dataAttribs.tsr;
+
+    let nestedAnnotations = [];
+    let [name, ...attribs] = token.attribs;
+    let slices = attribs.reduce((E, attrib) => {
+      let key = Array.isArray(attrib.k)
+        ? attrib.k.filter((part) => typeof part === "string").join("")
+        : attrib.k;
+      if (Array.isArray(attrib.v)) {
+        let [, , start, end] = attrib.srcOffsets;
+        let slice = new schema.Slice({
+          start,
+          end,
+        });
+        nestedAnnotations.push(...walk(attrib.v), slice);
+        E[key.trim()] = `${slice.type}:${slice.id}`;
+      } else {
+        E[key.trim()] = attrib.v.trim();
+      }
+      return E;
+    }, {} as Record<string, string>);
+    name = Array.isArray(name.k)
+      ? name.k.filter((part) => typeof part === "string").join("")
+      : name.k;
+
+    // There are positional arguments
+    // and named arguments on templates;
+    // each can also contain sub trees
+    let args = Object.entries(slices)
+      .filter(([key]) => key === "")
+      .map(([, value]) => value);
+    Object.entries(slices)
+      .filter(([key]) => key.match(/^\d+$/))
+      .forEach(([index, value]) => {
+        args[parseInt(index)] = value;
+      });
+    let props = Object.entries(slices)
+      .filter(([key]) => key !== "" && !key.match(/^\d+$/))
+      .reduce((E, [key, value]) => {
+        E[key] = value;
+        return E;
+      }, {});
+
+    return [
+      ...nestedAnnotations,
+      new ParseAnnotation({
+        start,
+        end,
+      }),
+      new schema.Template({
+        start,
+        end,
+        attributes: {
+          name,
+          args,
+          props,
+        },
+      }),
+    ];
+  },
   TagTk(token) {
     let [start, end] = token.dataAttribs.tsr;
     let attributes = token.attribs.reduce((E, attrib) => {

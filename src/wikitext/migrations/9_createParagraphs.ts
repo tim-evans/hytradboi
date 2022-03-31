@@ -1,4 +1,8 @@
-import Document, { BlockAnnotation, is } from "@atjson/document";
+import Document, {
+  BlockAnnotation,
+  is,
+  ParseAnnotation,
+} from "@atjson/document";
 import * as schema from "../annotations";
 
 // Now that newlines aren't adjacent, we can
@@ -14,8 +18,16 @@ export function createParagraphs(doc: Document) {
       (newline, block) =>
         newline.start === block.end || newline.start === block.start
     )
-    .update(({ newline, blocks }) => {
-      if (blocks.length === 0) {
+    .outerJoin(
+      doc
+        .where((annotation) => is(annotation, schema.Template))
+        .as("templates"),
+      ({ newline }, template) =>
+        (newline.start > template.start && newline.end < template.end) ||
+        newline.start === template.end
+    )
+    .update(({ newline, blocks, templates }) => {
+      if (blocks.length === 0 && templates.length === 0) {
         if (previous == null) {
           doc.addAnnotations(
             new schema.Paragraph({
