@@ -133,6 +133,9 @@ let handlers = {
         href: token.getAttribute("href"),
       },
     });
+    if (token.dataAttribs.stx === "magiclink") {
+      return [link];
+    }
     let [contentStart, contentEnd] = token.dataAttribs.extLinkContentOffsets;
 
     return [
@@ -287,6 +290,38 @@ let handlers = {
         end,
         attributes: {
           reason: `${redirect.type}:${redirect.id}`,
+        },
+      }),
+    ];
+  },
+  extension(token) {
+    let [start, sourceStart, sourceEnd, end] = token.dataAttribs.extTagOffsets;
+    let slice = new schema.Slice({
+      start: sourceStart,
+      end: sourceEnd,
+    });
+
+    let extension = new schema.Extension({
+      start,
+      end,
+      attributes: {
+        name: token.getAttribute("name"),
+        source: `${slice.type}:${slice.id}`,
+        options: token.getAttribute("options").reduce((E, { k, v }) => {
+          E[k] = v;
+          return E;
+        }, {}),
+      },
+    });
+
+    return [
+      slice,
+      extension,
+      new ParseAnnotation({
+        start,
+        end,
+        attributes: {
+          reason: `${extension.type}:${extension.id}`,
         },
       }),
     ];

@@ -13,3 +13,4 @@ export * from "./ClosingTag";
 export * from "./Heading";
 export * from "./Template";
 export * from "./Redirect";
+export * from "./Extension";

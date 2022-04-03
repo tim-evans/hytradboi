@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { render } from "react-dom";
-import { CSSReset, CSSVariables, Presentation } from "./components";
+import { CSSReset, CSSVariables } from "./components";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { WikiText } from "./wikitext/viewer";
+import { Viewer } from "./wikitext/Viewer";
+import { Page } from "./wikitext/Page";
+import { fromWikitext } from "./wikitext";
 
 function App() {
   return (
@@ -10,8 +13,22 @@ function App() {
       <CSSVariables />
       <BrowserRouter>
         <Routes>
-          <Route path="/wiki/:slug" element={<WikiText />}></Route>
-          <Route path="/" element={<Presentation />}></Route>
+          <Route path="/wiki/:slug" element={<Page />}></Route>
+          <Route
+            path="/"
+            element={
+              <Viewer
+                title="Welcome"
+                document={fromWikitext(
+                  `Try the following links for examples of pages with different annotation profiles:
+* [[Database]]
+* [[Bob Ross]]
+* [[New York City]]
+                  `
+                )}
+              />
+            }
+          ></Route>
         </Routes>
       </BrowserRouter>
     </>

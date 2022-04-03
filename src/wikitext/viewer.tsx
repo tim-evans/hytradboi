@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import { fromWikitext } from ".";
 import Renderer, { ReactRendererProvider } from "./renderer";
 import * as allComponents from "./components";
 import { Button, ViewSourceIcon, RichTextIcon } from "../components";
+import Document from "@atjson/document";
 
 const Title = styled.h1`
   font-size: 1.8em;
@@ -31,50 +30,31 @@ const Code = styled.pre`
   white-space: pre-wrap;
 `;
 
-export function WikiText() {
+export function Viewer(props: { title: string; document: Document }) {
   let [view, setView] = useState<"source" | "preview">("source");
-  let { slug } = useParams<{ slug: string }>();
-  let [title, setTitle] = useState("");
-  let [atjson, setAtjson] = useState(null);
-  useEffect(() => {
-    let unmounted = false;
-    fetch(
-      `/api?action=parse&prop=wikitext&format=json&contentmodel=wikitext&page=${encodeURIComponent(
-        slug
-      )}`
-    )
-      .then((result) => {
-        return result.json();
-      })
-      .then((json) => {
-        if (!unmounted) {
-          setTitle(json.parse.title);
-          document.title = `${json.parse.title} | Wikipedia`;
-          let doc = fromWikitext(json.parse.wikitext["*"]);
-          setAtjson(doc);
-          console.log(doc);
-        }
-      });
-    return () => {
-      unmounted = true;
-    };
-  }, [slug]);
   let { Default, ...components } = allComponents;
+
+  useEffect(() => {
+    if (props.title && props.document) {
+      document.title = `${props.title} | Wikipedia`;
+      console.log(props.document);
+    }
+  }, [props]);
 
   return (
     <Main>
-      {view === "preview" && atjson && (
+      {view === "preview" && props.document && (
         <ReactRendererProvider value={components}>
           <Title>
-            {title}
+            {props.title}
             <Button onClick={() => setView("source")}>
               <ViewSourceIcon />
             </Button>
           </Title>
-          <Article>{Renderer.render({ document: atjson })}</Article>
+          <Article>{Renderer.render({ document: props.document })}</Article>
         </ReactRendererProvider>
       )}
-      {view === "source" && atjson && (
+      {view === "source" && props.document && (
         <ReactRendererProvider
           value={{
             ParseToken: allComponents.ParseToken,
@@ -86,13 +66,16 @@ export function WikiText() {
           }}
         >
           <Title>
-            {title}
+            {props.title}
             <Button onClick={() => setView("preview")}>
               <RichTextIcon />
             </Button>
           </Title>
           <Code>
-            {Renderer.render({ document: atjson, includeParseTokens: true })}
+            {Renderer.render({
+              document: props.document,
+              includeParseTokens: true,
+            })}
           </Code>
         </ReactRendererProvider>
       )}

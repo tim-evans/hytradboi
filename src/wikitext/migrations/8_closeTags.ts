@@ -30,14 +30,25 @@ export function closeTags(doc: Document) {
       // they don't, so this check is valid
       if (possibleClosingTags.length === 0) {
         let newline = newlines[0];
-        closingTag = new schema.ClosingTag({
-          start: newline.start,
-          end: newline.end,
-          attributes: {
-            name: openingTag.attributes.name,
-            openingTag: `${openingTag.type}:${openingTag.id}`,
-          },
-        });
+        if (newline) {
+          closingTag = new schema.ClosingTag({
+            start: newline.start,
+            end: newline.end,
+            attributes: {
+              name: openingTag.attributes.name,
+              openingTag: `${openingTag.type}:${openingTag.id}`,
+            },
+          });
+        } else {
+          closingTag = new schema.ClosingTag({
+            start: doc.content.length,
+            end: doc.content.length,
+            attributes: {
+              name: openingTag.attributes.name,
+              openingTag: `${openingTag.type}:${openingTag.id}`,
+            },
+          });
+        }
         doc.addAnnotations(closingTag);
       } else {
         let newClosingTag = new schema.ClosingTag({

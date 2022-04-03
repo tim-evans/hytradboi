@@ -1,4 +1,5 @@
 import Document from "@atjson/document";
+import { mergeRefSource } from "./0_mergeRefSource";
 import { exposeLinkText } from "./1_exposeLinkText";
 import { stampInHrefToWikilink } from "./2_stampInHrefToWikilink";
 import { extendWikilinkEnd } from "./3_extendWikilinkEnd";
@@ -18,6 +19,7 @@ export default function (doc: Document) {
   // handle structural compositions
   // in the document correctly,
   // and reproducibly.
+  mergeRefSource(doc);
   exposeLinkText(doc);
   stampInHrefToWikilink(doc);
   extendWikilinkEnd(doc);
