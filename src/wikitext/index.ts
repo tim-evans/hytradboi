@@ -157,6 +157,18 @@ let handlers = {
       }),
     ];
   },
+  urllink(token) {
+    let [start, end] = token.dataAttribs.tsr;
+    let link = new schema.Extlink({
+      start,
+      end,
+      attributes: {
+        href: token.getAttribute("href"),
+      },
+    });
+
+    return [link];
+  },
   template(token) {
     // Templates may contain multiple
     // bits that will get passed into
@@ -204,25 +216,29 @@ let handlers = {
     let props = Object.entries(slices)
       .filter(([key]) => key !== "" && !key.match(/^\d+$/))
       .reduce((E, [key, value]) => {
-        E[key] = value;
+        E[key] = value as string;
         return E;
-      }, {});
+      }, {} as Record<string, string>);
 
+    let template = new schema.Template({
+      start,
+      end,
+      attributes: {
+        name,
+        args,
+        props,
+      },
+    });
     return [
       ...nestedAnnotations,
       new ParseAnnotation({
         start,
         end,
-      }),
-      new schema.Template({
-        start,
-        end,
         attributes: {
-          name,
-          args,
-          props,
+          reason: `${template.type}:${template.id}`,
         },
       }),
+      template,
     ];
   },
   TagTk(token) {
