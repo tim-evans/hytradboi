@@ -8,8 +8,14 @@ import Document from "@atjson/document";
 const Title = styled.h1`
   font-size: 1.8em;
   line-height: 1.3em;
-  border-bottom: 1px solid var(--color-gray);
   margin-bottom: 1em;
+  &:after {
+    margin-top: 0.2em;
+    content: " ";
+    display: block;
+    width: 3em;
+    border-bottom: 1px solid var(--color-gray);
+  }
 `;
 
 const Main = styled.main`

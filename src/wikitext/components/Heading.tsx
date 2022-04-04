@@ -13,7 +13,13 @@ export const Heading = styled.div.attrs((props) => {
           margin-block-start: 1em;
           margin-block-end: 0.25em;
           line-height: 1.3;
-          border-bottom: 1px solid var(--color-gray);
+          &:after {
+            margin-top: 0.2em;
+            content: " ";
+            display: block;
+            width: 3em;
+            border-bottom: 1px solid var(--color-gray);
+          }
         `
       : ""}
 
