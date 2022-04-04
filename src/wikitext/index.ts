@@ -342,6 +342,26 @@ let handlers = {
       }),
     ];
   },
+  "mw-quote"(token) {
+    let [start, end] = token.dataAttribs.tsr;
+    let quote = new schema.Quote({
+      start,
+      end,
+      attributes: {
+        value: token.getAttribute("value"),
+      },
+    });
+    return [
+      quote,
+      new ParseAnnotation({
+        start,
+        end,
+        attributes: {
+          reason: `${quote.type}:${quote.id}`,
+        },
+      }),
+    ];
+  },
 };
 
 function walk(tokens) {

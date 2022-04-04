@@ -14,3 +14,6 @@ export * from "./Heading";
 export * from "./Template";
 export * from "./Redirect";
 export * from "./Extension";
+export * from "./Quote";
+export * from "./Italic";
+export * from "./Bold";

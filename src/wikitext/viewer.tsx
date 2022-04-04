@@ -65,10 +65,9 @@ export function Viewer(props: { title: string; document: Document }) {
           value={{
             ParseToken: allComponents.ParseToken,
             Default: allComponents.Default,
-            Wikilink:
-              "Wikilink" in allComponents
-                ? allComponents.Wikilink
-                : allComponents.Default,
+            Bold: allComponents.Bold,
+            Italic: allComponents.Italic,
+            Wikilink: allComponents.Wikilink,
           }}
         >
           <Title>

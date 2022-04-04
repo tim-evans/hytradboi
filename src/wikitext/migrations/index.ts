@@ -13,6 +13,7 @@ import { createLists } from "./10_createLists";
 import { createHeadings } from "./11_createHeadings";
 import { stampInRedirects } from "./12_stampInRedirects";
 import { stampInTemplateValues } from "./13_stampInTemplateValues";
+import { createMarkupFromQuotes } from "./14_createMarkupFromQuotes";
 
 export default function (doc: Document) {
   // We'll add a series of migrations
@@ -36,6 +37,7 @@ export default function (doc: Document) {
   createHeadings(doc, "h4", { level: 4 });
   stampInRedirects(doc);
   stampInTemplateValues(doc);
+  createMarkupFromQuotes(doc);
 
   return doc;
 }
