@@ -12,11 +12,19 @@ export function createParagraphs(doc: Document) {
   let previous = null;
   doc
     .where((annotation) => is(annotation, schema.Newline))
+    .sort((a, b) => (a.start > b.start ? 1 : -1))
     .as("newline")
     .outerJoin(
-      doc.where((annotation) => is(annotation, schema.ClosingTag)).as("blocks"),
-      (newline, block) =>
-        newline.start === block.end || newline.start === block.start
+      doc
+        .where((annotation) => is(annotation, schema.ClosingTag))
+        .as("priorBlocks"),
+      (newline, block) => newline.start === block.end
+    )
+    .outerJoin(
+      doc
+        .where((annotation) => is(annotation, schema.ClosingTag))
+        .as("nextBlocks"),
+      ({ newline }, block) => newline.start === block.start
     )
     .outerJoin(
       doc
@@ -26,8 +34,12 @@ export function createParagraphs(doc: Document) {
         (newline.start > template.start && newline.end < template.end) ||
         newline.start === template.end
     )
-    .update(({ newline, blocks, templates }) => {
-      if (blocks.length === 0 && templates.length === 0) {
+    .update(({ newline, priorBlocks, nextBlocks, templates }) => {
+      if (
+        priorBlocks.length === 0 &&
+        nextBlocks.length === 0 &&
+        templates.length === 0
+      ) {
         if (previous == null) {
           doc.addAnnotations(
             new schema.Paragraph({
@@ -35,7 +47,7 @@ export function createParagraphs(doc: Document) {
               end: newline.start,
             })
           );
-        } else {
+        } else if (newline.end - newline.start > 1) {
           doc.addAnnotations(
             new schema.Paragraph({
               start: previous.end,
