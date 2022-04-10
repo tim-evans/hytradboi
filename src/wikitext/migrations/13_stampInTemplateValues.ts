@@ -35,7 +35,17 @@ export function stampInTemplateValues(doc: Document) {
             annotation !== slice
         )
     )
-    .update(({ template, slices, annotations, newlines }) => {
+    .outerJoin(
+      doc.where((annotation) => is(annotation, schema.Extlink)).as("extlinks"),
+      ({ slices }, annotation) =>
+        slices.some(
+          (slice) =>
+            annotation.start >= slice.start &&
+            annotation.end <= slice.end &&
+            annotation !== slice
+        )
+    )
+    .update(({ template, slices, annotations, newlines, extlinks }) => {
       let sliceValues = {};
       let annotationsToRemove = [];
       for (let slice of slices) {
@@ -45,7 +55,35 @@ export function stampInTemplateValues(doc: Document) {
             annotation.end <= slice.end &&
             annotation !== slice
         );
-        if (innerAnnotations.length === 0) {
+        let urls = extlinks.filter(
+          (annotation) =>
+            annotation.start >= slice.start &&
+            annotation.end <= slice.end &&
+            annotation !== slice &&
+            annotation.attributes.href ===
+              doc.content.slice(annotation.start, annotation.end).trim()
+        );
+
+        // Stamp in magiclinks
+        if (
+          urls.length === innerAnnotations.length &&
+          urls.length === 1 &&
+          urls[0] === innerAnnotations[0]
+        ) {
+          annotationsToRemove.push(
+            slice,
+            ...urls,
+            ...newlines.filter(
+              (annotation) =>
+                annotation.start >= slice.start &&
+                annotation.end <= slice.end &&
+                annotation !== slice
+            )
+          );
+
+          sliceValues[`${slice.type}:${slice.id}`] =
+            urls[0].attributes.href.trim();
+        } else if (innerAnnotations.length === 0) {
           annotationsToRemove.push(
             slice,
             ...newlines.filter(
