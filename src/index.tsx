@@ -23,6 +23,7 @@ function App() {
                   `Try the following links for examples of pages with different annotation profiles:
 * [[Database]]
 * [[Bob Ross]]
+* [[Lenapehoking]]
 * [[New York City]]
                   `
                 )}
