@@ -33,6 +33,7 @@ export function fromWikitext(wikitext: string) {
 // be writing the fromWikitext
 // implementation above
 export default class WikiText extends Document {
+  static contentType = "application/vnd.atjson+mediawiki";
   static schema = [...Object.values(schema)];
 }
 
@@ -163,7 +164,7 @@ let handlers = {
       start,
       end,
       attributes: {
-        href: token.getAttribute("href"),
+        href: token.getAttribute("href").join(""),
       },
     });
 
@@ -207,11 +208,11 @@ let handlers = {
     // each can also contain sub trees
     let args = Object.entries(slices)
       .filter(([key]) => key === "")
-      .map(([, value]) => value);
+      .map(([, value]) => value) as string[];
     Object.entries(slices)
       .filter(([key]) => key.match(/^\d+$/))
       .forEach(([index, value]) => {
-        args[parseInt(index)] = value;
+        args[parseInt(index)] = value as string;
       });
     let props = Object.entries(slices)
       .filter(([key]) => key !== "" && !key.match(/^\d+$/))
