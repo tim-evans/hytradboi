@@ -5,11 +5,17 @@ export function createMarkupFromQuotes(doc: Document) {
   let seen: Record<string, boolean | undefined> = {};
   doc
     .where((annotation) => is(annotation, schema.Quote))
+    .sort((a, b) => (a.start > b.start ? 1 : -1))
     .as("start")
     .join(
-      doc.where((annotation) => is(annotation, schema.Quote)).as("endings"),
+      doc
+        .where((annotation) => is(annotation, schema.Quote))
+        .sort((a, b) => (a.start > b.start ? 1 : -1))
+        .as("endings"),
       (start, end) =>
-        start.attributes.value === end.attributes.value && start.end < end.start
+        start !== end &&
+        start.attributes.value === end.attributes.value &&
+        start.end < end.start
     )
     .join(
       doc.where((annotation) => is(annotation, ParseAnnotation)).as("tokens"),

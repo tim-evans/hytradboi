@@ -1,6 +1,6 @@
-import { BlockAnnotation } from "@atjson/document";
+import { InlineAnnotation } from "@atjson/document";
 
-export class Template extends BlockAnnotation<{
+export class Template extends InlineAnnotation<{
   name: string;
   args: string[];
   props: Record<string, string>;

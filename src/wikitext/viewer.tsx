@@ -4,6 +4,8 @@ import Renderer, { ReactRendererProvider } from "./renderer";
 import * as allComponents from "./components";
 import { Button, ViewSourceIcon, RichTextIcon } from "../components";
 import Document from "@atjson/document";
+import { TemplateProvider } from "../contexts";
+import * as templates from "./templates";
 
 const Title = styled.h1`
   font-size: 1.8em;
@@ -51,13 +53,15 @@ export function Viewer(props: { title: string; document: Document }) {
     <Main>
       {view === "preview" && props.document && (
         <ReactRendererProvider value={components}>
-          <Title>
-            {props.title}
-            <Button onClick={() => setView("source")}>
-              <ViewSourceIcon />
-            </Button>
-          </Title>
-          <Article>{Renderer.render({ document: props.document })}</Article>
+          <TemplateProvider value={{ PAGENAME: props.title, templates }}>
+            <Title>
+              {props.title}
+              <Button onClick={() => setView("source")}>
+                <ViewSourceIcon />
+              </Button>
+            </Title>
+            <Article>{Renderer.render({ document: props.document })}</Article>
+          </TemplateProvider>
         </ReactRendererProvider>
       )}
       {view === "source" && props.document && (

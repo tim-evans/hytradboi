@@ -13,6 +13,8 @@ const Link = styled.a`
     text-decoration: underline;
   }
   svg {
+    position: relative;
+    top: 0.125em;
     margin-left: 0.125em;
   }
 `;

@@ -182,7 +182,7 @@ let handlers = {
 
     let nestedAnnotations = [];
     let [name, ...attribs] = token.attribs;
-    let slices = attribs.reduce((E, attrib) => {
+    let slices = attribs.map((attrib) => {
       let key = Array.isArray(attrib.k)
         ? attrib.k.filter((part) => typeof part === "string").join("")
         : attrib.k;
@@ -193,12 +193,11 @@ let handlers = {
           end,
         });
         nestedAnnotations.push(...walk(attrib.v), slice);
-        E[key.trim()] = `${slice.type}:${slice.id}`;
+        return [key.trim(), `${slice.type}:${slice.id}`];
       } else {
-        E[key.trim()] = attrib.v.trim();
+        return [key.trim(), attrib.v.trim()];
       }
-      return E;
-    }, {} as Record<string, string>);
+    });
     name = Array.isArray(name.k)
       ? name.k.filter((part) => typeof part === "string").join("")
       : name.k;
@@ -206,15 +205,15 @@ let handlers = {
     // There are positional arguments
     // and named arguments on templates;
     // each can also contain sub trees
-    let args = Object.entries(slices)
+    let args = slices
       .filter(([key]) => key === "")
       .map(([, value]) => value) as string[];
-    Object.entries(slices)
+    slices
       .filter(([key]) => key.match(/^\d+$/))
       .forEach(([index, value]) => {
         args[parseInt(index)] = value as string;
       });
-    let props = Object.entries(slices)
+    let props = slices
       .filter(([key]) => key !== "" && !key.match(/^\d+$/))
       .reduce((E, [key, value]) => {
         E[key] = value as string;
