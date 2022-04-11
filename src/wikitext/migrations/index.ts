@@ -8,12 +8,13 @@ import { handleCategoryLinks } from "./5_handleCategoryLinks";
 import { unmarkFilesAndImages } from "./6_unmarkFilesAndImages";
 import { combineNewlines } from "./7_combineNewlines";
 import { closeTags } from "./8_closeTags";
-import { createParagraphs } from "./9_createParagraphs";
-import { createLists } from "./10_createLists";
-import { createHeadings } from "./11_createHeadings";
-import { stampInRedirects } from "./12_stampInRedirects";
-import { stampInTemplateValues } from "./13_stampInTemplateValues";
-import { createMarkupFromQuotes } from "./14_createMarkupFromQuotes";
+import { setTemplateType } from "./9_setTemplateTypes";
+import { createParagraphs } from "./10_createParagraphs";
+import { createLists } from "./11_createLists";
+import { createHeadings } from "./12_createHeadings";
+import { stampInRedirects } from "./13_stampInRedirects";
+import { stampInTemplateValues } from "./14_stampInTemplateValues";
+import { createMarkupFromQuotes } from "./15_createMarkupFromQuotes";
 
 export default function (doc: Document) {
   // We'll add a series of migrations
@@ -30,6 +31,7 @@ export default function (doc: Document) {
   unmarkFilesAndImages(doc);
   combineNewlines(doc);
   closeTags(doc);
+  setTemplateType(doc);
   createParagraphs(doc);
   createLists(doc);
   createHeadings(doc, "h2", { level: 2 });

@@ -25,14 +25,24 @@ export function createMarkupFromQuotes(doc: Document) {
           (ending) => token.attributes.reason === `${ending.type}:${ending.id}`
         )
     )
-    .update(({ start, endings, tokens }) => {
-      let end = endings.sort((a, b) => (a.start > b.start ? 1 : -1))[0];
-      if (end && !seen[start.id]) {
-        seen[end.id] = true;
+    .outerJoin(
+      doc.where((annotation) => is(annotation, schema.Newline)).as("newlines"),
+      ({ start }, newline) => newline.start > start.end
+    )
+    .update(({ start, endings, tokens, newlines }) => {
+      let ending = endings.sort((a, b) => (a.start > b.start ? 1 : -1))[0];
+      let endOfLine =
+        newlines.sort((a, b) => (a.start > b.start ? 1 : -1))[0]?.start ??
+        doc.content.length;
+      if (!seen[start.id]) {
+        let end = ending && ending.start < endOfLine ? ending.end : endOfLine;
+        if (end && ending.start < endOfLine) {
+          seen[ending.id] = true;
+        }
         let parseTokens = tokens.filter((token) => {
           return (
             token.attributes.reason === `${start.type}:${start.id}` ||
-            token.attributes.reason === `${end.type}:${end.id}`
+            (end && token.attributes.reason === `${ending.type}:${ending.id}`)
           );
         });
         let markup =
@@ -40,27 +50,27 @@ export function createMarkupFromQuotes(doc: Document) {
             ? [
                 new schema.Italic({
                   start: start.start,
-                  end: end.end,
+                  end,
                 }),
               ]
             : start.attributes.value === "'''"
             ? [
                 new schema.Bold({
                   start: start.start,
-                  end: end.end,
+                  end,
                 }),
               ]
             : [
                 new schema.Bold({
                   start: start.start,
-                  end: end.end,
+                  end,
                 }),
                 new schema.Italic({
                   start: start.start,
-                  end: end.end,
+                  end,
                 }),
               ];
-        doc.removeAnnotations([start, end, ...parseTokens]);
+        doc.removeAnnotations([start, ending, ...parseTokens]);
         doc.addAnnotations(
           ...markup,
           ...parseTokens.map(

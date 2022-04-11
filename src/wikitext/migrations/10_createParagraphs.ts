@@ -28,7 +28,11 @@ export function createParagraphs(doc: Document) {
     )
     .outerJoin(
       doc
-        .where((annotation) => is(annotation, schema.Template))
+        .where(
+          (annotation) =>
+            is(annotation, schema.Template) &&
+            annotation.attributes.type === "block"
+        )
         .as("templates"),
       ({ newline }, template) =>
         (newline.start > template.start && newline.end < template.end) ||

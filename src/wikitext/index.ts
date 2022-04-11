@@ -3,6 +3,8 @@ import { parse } from "./parser";
 import * as schema from "./annotations";
 import migrate from "./migrations";
 
+let templateNesting = 0;
+
 export function fromWikitext(wikitext: string) {
   let tokens = parse(wikitext);
   // Next, let's treat our initial
@@ -179,6 +181,7 @@ let handlers = {
     // tree, we'll refer to that value
     // as a slice
     let [start, end] = token.dataAttribs.tsr;
+    let nesting = templateNesting++;
 
     let nestedAnnotations = [];
     let [name, ...attribs] = token.attribs;
@@ -198,6 +201,7 @@ let handlers = {
         return [key.trim(), attrib.v.trim()];
       }
     });
+    templateNesting--;
     name = Array.isArray(name.k)
       ? name.k.filter((part) => typeof part === "string").join("")
       : name.k;
@@ -227,6 +231,8 @@ let handlers = {
         name,
         args,
         props,
+        nesting,
+        type: "inline",
       },
     });
     return [

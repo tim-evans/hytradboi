@@ -1,4 +1,4 @@
-import Document, { is, ParseAnnotation } from "@atjson/document";
+import Document, { is } from "@atjson/document";
 import * as schema from "../annotations";
 
 export function stampInTemplateValues(doc: Document) {
