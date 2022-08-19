@@ -1,4 +1,4 @@
-import Document, { is } from "@atjson/document";
+import Document, { is, SliceAnnotation } from "@atjson/document";
 import * as schema from "../annotations";
 
 export function stampInHrefToWikilink(doc: Document) {
@@ -6,8 +6,8 @@ export function stampInHrefToWikilink(doc: Document) {
     .where((annotation) => is(annotation, schema.Wikilink))
     .as("wikilink")
     .join(
-      doc.where((annotation) => is(annotation, schema.Slice)).as("slices"),
-      (link, slice) => link.attributes.href === `${slice.type}:${slice.id}`
+      doc.where((annotation) => is(annotation, SliceAnnotation)).as("slices"),
+      (link, slice) => link.attributes.href === slice.id
     )
     .update(({ wikilink, slices }) => {
       let slice = slices[0];

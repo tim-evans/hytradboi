@@ -7,7 +7,7 @@ export function stampInRedirects(doc: Document) {
     .as("redirect")
     .join(
       doc.where((annotation) => is(annotation, schema.Wikilink)).as("links"),
-      (redirect, link) => redirect.attributes.to === `${link.type}:${link.id}`
+      (redirect, link) => redirect.attributes.to === link.id
     )
     .update(({ redirect, links }) => {
       let link = links[0];

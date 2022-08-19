@@ -20,13 +20,13 @@ export function createLists(doc: Document) {
             annotation.attributes.name === "listItem"
         )
         .as("end"),
-      (start, end) => start.attributes.closingTag === `${end.type}:${end.id}`
+      (start, end) => start.attributes.closingTag === end.id
     )
     .join(
       doc.where((annotation) => is(annotation, ParseAnnotation)).as("tokens"),
       ({ start, end }, token) =>
-        token.attributes.reason === `${start.type}:${start.id}` ||
-        token.attributes.reason === `${end[0].type}:${end[0].id}`
+        token.attributes.reason === start.id ||
+        token.attributes.reason === end[0].id
     )
     .update(({ start, end, tokens }) => {
       let listItem = new schema.ListItem({
@@ -41,7 +41,7 @@ export function createLists(doc: Document) {
             new ParseAnnotation({
               ...token,
               attributes: {
-                reason: `${listItem.type}:${listItem.id}`,
+                reason: listItem.id,
               },
             })
         )

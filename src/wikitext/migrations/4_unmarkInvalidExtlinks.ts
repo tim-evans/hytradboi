@@ -12,7 +12,7 @@ export function unmarkInvalidExtlinks(doc: Document) {
     .as("extlink")
     .join(
       doc.where((annotation) => is(annotation, ParseAnnotation)).as("tokens"),
-      (link, token) => token.attributes.reason === `${link.type}:${link.id}`
+      (link, token) => token.attributes.reason === link.id
     )
     .update(({ extlink, tokens }) => {
       try {

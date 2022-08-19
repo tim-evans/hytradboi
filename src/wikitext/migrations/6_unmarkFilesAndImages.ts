@@ -17,7 +17,7 @@ export function unmarkFilesAndImages(doc: Document) {
     .as("wikilink")
     .join(
       doc.where((annotation) => is(annotation, ParseAnnotation)).as("tokens"),
-      (link, token) => token.attributes.reason === `${link.type}:${link.id}`
+      (link, token) => token.attributes.reason === link.id
     )
     .update(({ wikilink, tokens }) => {
       let Annotation = wikilink.attributes.href.startsWith("File")
@@ -38,7 +38,7 @@ export function unmarkFilesAndImages(doc: Document) {
               start: token.start,
               end: token.end,
               attributes: {
-                reason: `${embed.type}:${embed.id}`,
+                reason: embed.id,
               },
             })
         )

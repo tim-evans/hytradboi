@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import Renderer, { ReactRendererProvider } from "./renderer";
+import Renderer, { ReactRendererProvider } from "@atjson/renderer-react";
 import * as allComponents from "./components";
 import { Button, ViewSourceIcon, RichTextIcon } from "../components";
 import Document from "@atjson/document";

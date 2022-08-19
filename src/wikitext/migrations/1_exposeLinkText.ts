@@ -1,4 +1,8 @@
-import Document, { is, ParseAnnotation } from "@atjson/document";
+import Document, {
+  is,
+  ParseAnnotation,
+  SliceAnnotation,
+} from "@atjson/document";
 import * as schema from "../annotations";
 
 export function exposeLinkText(doc: Document) {
@@ -7,20 +11,18 @@ export function exposeLinkText(doc: Document) {
     .as("wikilink")
     .join(
       doc.where((annotation) => is(annotation, ParseAnnotation)).as("tokens"),
-      (wikilink, token) =>
-        token.attributes.reason === `${wikilink.type}:${wikilink.id}`
+      (wikilink, token) => token.attributes.reason === wikilink.id
     )
     .join(
-      doc.where((annotation) => is(annotation, schema.Slice)).as("hrefs"),
-      ({ wikilink }, slice) =>
-        wikilink.attributes.href === `${slice.type}:${slice.id}`
+      doc.where((annotation) => is(annotation, SliceAnnotation)).as("hrefs"),
+      ({ wikilink }, slice) => wikilink.attributes.href === slice.id
     )
     .outerJoin(
       doc
-        .where((annotation) => is(annotation, schema.Slice))
+        .where((annotation) => is(annotation, SliceAnnotation))
         .as("maybeContent"),
       ({ wikilink }, slice) =>
-        wikilink.attributes.maybeContent.includes(`${slice.type}:${slice.id}`)
+        wikilink.attributes.maybeContent.includes(slice.id)
     )
     .update(({ hrefs, maybeContent, tokens }) => {
       // We now have a big join that allows

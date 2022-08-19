@@ -1,4 +1,4 @@
-import Document, { ParseAnnotation } from "@atjson/document";
+import Document, { ParseAnnotation, SliceAnnotation } from "@atjson/document";
 import { parse } from "./parser";
 import * as schema from "./annotations";
 import migrate from "./migrations";
@@ -85,7 +85,7 @@ let handlers = {
     // so other annotations and code can
     // query them.
     let hrefStart = start + token.dataAttribs.src.indexOf(href.vsrc);
-    let hrefSlice = new schema.Slice({
+    let hrefSlice = new SliceAnnotation({
       start: hrefStart,
       end: hrefStart + href.vsrc.length,
     });
@@ -96,7 +96,7 @@ let handlers = {
       // so we need to collect those tokens
       nestedAnnotations.push(...walk(attrib.v));
       let [start, end] = attrib.srcOffsets;
-      return new schema.Slice({
+      return new SliceAnnotation({
         start,
         end,
       });
@@ -106,10 +106,8 @@ let handlers = {
       start,
       end,
       attributes: {
-        href: `${hrefSlice.type}:${hrefSlice.id}`,
-        maybeContent: maybeContentSlices.map(
-          (slice) => `${slice.type}:${slice.id}`
-        ),
+        href: hrefSlice.id,
+        maybeContent: maybeContentSlices.map((slice) => slice.id),
       },
     });
 
@@ -122,7 +120,7 @@ let handlers = {
         start,
         end,
         attributes: {
-          reason: `${link.type}:${link.id}`,
+          reason: link.id,
         },
       }),
     ];
@@ -148,14 +146,14 @@ let handlers = {
         start,
         end: contentStart,
         attributes: {
-          reason: `${link.type}:${link.id}`,
+          reason: link.id,
         },
       }),
       new ParseAnnotation({
         start: contentEnd,
         end,
         attributes: {
-          reason: `${link.type}:${link.id}`,
+          reason: link.id,
         },
       }),
     ];
@@ -191,12 +189,12 @@ let handlers = {
         : attrib.k;
       if (Array.isArray(attrib.v)) {
         let [, , start, end] = attrib.srcOffsets;
-        let slice = new schema.Slice({
+        let slice = new SliceAnnotation({
           start,
           end,
         });
         nestedAnnotations.push(...walk(attrib.v), slice);
-        return [key.trim(), `${slice.type}:${slice.id}`];
+        return [key.trim(), slice.id];
       } else {
         return [key.trim(), attrib.v.trim()];
       }
@@ -241,7 +239,7 @@ let handlers = {
         start,
         end,
         attributes: {
-          reason: `${template.type}:${template.id}`,
+          reason: template.id,
         },
       }),
       template,
@@ -267,7 +265,7 @@ let handlers = {
         start,
         end,
         attributes: {
-          reason: `${tag.type}:${tag.id}`,
+          reason: tag.id,
         },
       }),
     ];
@@ -287,7 +285,7 @@ let handlers = {
         start,
         end,
         attributes: {
-          reason: `${tag.type}:${tag.id}`,
+          reason: tag.id,
         },
       }),
     ];
@@ -300,7 +298,7 @@ let handlers = {
       start,
       end,
       attributes: {
-        to: `${link.type}:${link.id}`,
+        to: link.id,
       },
     });
 
@@ -311,14 +309,14 @@ let handlers = {
         start,
         end,
         attributes: {
-          reason: `${redirect.type}:${redirect.id}`,
+          reason: redirect.id,
         },
       }),
     ];
   },
   extension(token) {
     let [start, sourceStart, sourceEnd, end] = token.dataAttribs.extTagOffsets;
-    let slice = new schema.Slice({
+    let slice = new SliceAnnotation({
       start: sourceStart,
       end: sourceEnd,
     });
@@ -328,7 +326,7 @@ let handlers = {
       end,
       attributes: {
         name: token.getAttribute("name"),
-        source: `${slice.type}:${slice.id}`,
+        source: slice.id,
         options: token.getAttribute("options").reduce((E, { k, v }) => {
           E[k] = v;
           return E;
@@ -343,7 +341,7 @@ let handlers = {
         start,
         end,
         attributes: {
-          reason: `${extension.type}:${extension.id}`,
+          reason: extension.id,
         },
       }),
     ];
@@ -363,7 +361,7 @@ let handlers = {
         start,
         end,
         attributes: {
-          reason: `${quote.type}:${quote.id}`,
+          reason: quote.id,
         },
       }),
     ];

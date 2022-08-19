@@ -14,8 +14,7 @@ export function handleCategoryLinks(doc: Document) {
     .join(
       doc.where((annotation) => is(annotation, ParseAnnotation)).as("tokens"),
       (link, token) =>
-        token.attributes.reason === `${link.type}:${link.id}` &&
-        token.start == link.start
+        token.attributes.reason === link.id && token.start == link.start
     )
     .update(({ tokens }) => {
       let openingBraces = tokens[0];

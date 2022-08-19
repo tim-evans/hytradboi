@@ -36,7 +36,7 @@ export function closeTags(doc: Document) {
             end: newline.end,
             attributes: {
               name: openingTag.attributes.name,
-              openingTag: `${openingTag.type}:${openingTag.id}`,
+              openingTag: openingTag.id,
             },
           });
         } else {
@@ -45,7 +45,7 @@ export function closeTags(doc: Document) {
             end: doc.content.length,
             attributes: {
               name: openingTag.attributes.name,
-              openingTag: `${openingTag.type}:${openingTag.id}`,
+              openingTag: openingTag.id,
             },
           });
         }
@@ -57,7 +57,7 @@ export function closeTags(doc: Document) {
           end: closingTag.end,
           attributes: {
             name: closingTag.attributes.name,
-            openingTag: `${openingTag.type}:${openingTag.id}`,
+            openingTag: openingTag.id,
           },
         });
         doc.replaceAnnotation(closingTag, newClosingTag);
@@ -72,7 +72,7 @@ export function closeTags(doc: Document) {
           end: openingTag.end,
           attributes: {
             name: openingTag.attributes.name,
-            closingTag: `${closingTag.type}:${closingTag.id}`,
+            closingTag: closingTag.id,
             attributes: openingTag.attributes.attributes,
           },
         })

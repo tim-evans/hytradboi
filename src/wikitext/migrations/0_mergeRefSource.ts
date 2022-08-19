@@ -1,4 +1,4 @@
-import Document, { is } from "@atjson/document";
+import Document, { is, SliceAnnotation } from "@atjson/document";
 import { fromWikitext } from "..";
 import * as schema from "../annotations";
 
@@ -10,8 +10,8 @@ export function mergeRefSource(doc: Document) {
     )
     .as("ref")
     .join(
-      doc.where((annotation) => is(annotation, schema.Slice)).as("slices"),
-      (ref, slice) => ref.attributes.source === `${slice.type}:${slice.id}`
+      doc.where((annotation) => is(annotation, SliceAnnotation)).as("slices"),
+      (ref, slice) => ref.attributes.source === slice.id
     )
     .outerJoin(
       doc
@@ -36,7 +36,7 @@ export function mergeRefSource(doc: Document) {
       );
       let reflist = reflists[0];
       if (reflist) {
-        reflist.attributes.args.push(`${slice.type}:${slice.id}`);
+        reflist.attributes.args.push(slice.id);
       }
     });
 }

@@ -23,13 +23,13 @@ export function createHeadings(
             annotation.attributes.name === name
         )
         .as("end"),
-      (start, end) => start.attributes.closingTag === `${end.type}:${end.id}`
+      (start, end) => start.attributes.closingTag === end.id
     )
     .join(
       doc.where((annotation) => is(annotation, ParseAnnotation)).as("tokens"),
       ({ start, end }, token) =>
-        token.attributes.reason === `${start.type}:${start.id}` ||
-        token.attributes.reason === `${end[0].type}:${end[0].id}`
+        token.attributes.reason === start.id ||
+        token.attributes.reason === end[0].id
     )
     .update(({ start, end, tokens }) => {
       let heading = new schema.Heading({
@@ -47,7 +47,7 @@ export function createHeadings(
             new ParseAnnotation({
               ...token,
               attributes: {
-                reason: `${heading.type}:${heading.id}`,
+                reason: heading.id,
               },
             })
         )

@@ -1,4 +1,4 @@
-import Document, { is } from "@atjson/document";
+import Document, { is, SliceAnnotation } from "@atjson/document";
 import * as schema from "../annotations";
 
 export function stampInTemplateValues(doc: Document) {
@@ -6,12 +6,10 @@ export function stampInTemplateValues(doc: Document) {
     .where((annotation) => is(annotation, schema.Template))
     .as("template")
     .join(
-      doc.where((annotation) => is(annotation, schema.Slice)).as("slices"),
+      doc.where((annotation) => is(annotation, SliceAnnotation)).as("slices"),
       (template, slice) =>
-        template.attributes.args.includes(`${slice.type}:${slice.id}`) ||
-        Object.values(template.attributes.props).includes(
-          `${slice.type}:${slice.id}`
-        )
+        template.attributes.args.includes(slice.id) ||
+        Object.values(template.attributes.props).includes(slice.id)
     )
     .outerJoin(
       doc
@@ -81,8 +79,7 @@ export function stampInTemplateValues(doc: Document) {
             )
           );
 
-          sliceValues[`${slice.type}:${slice.id}`] =
-            urls[0].attributes.href.trim();
+          sliceValues[slice.id] = urls[0].attributes.href.trim();
         } else if (innerAnnotations.length === 0) {
           annotationsToRemove.push(
             slice,
@@ -94,13 +91,11 @@ export function stampInTemplateValues(doc: Document) {
             )
           );
 
-          sliceValues[`${slice.type}:${slice.id}`] = doc.content
+          sliceValues[slice.id] = doc.content
             .slice(slice.start, slice.end)
             .trim();
         } else {
-          sliceValues[
-            `${slice.type}:${slice.id}`
-          ] = `${slice.type}:${slice.id}`;
+          sliceValues[slice.id] = slice.id;
         }
       }
 

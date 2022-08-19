@@ -20,10 +20,8 @@ export function createMarkupFromQuotes(doc: Document) {
     .join(
       doc.where((annotation) => is(annotation, ParseAnnotation)).as("tokens"),
       ({ start, endings }, token) =>
-        token.attributes.reason === `${start.type}:${start.id}` ||
-        endings.some(
-          (ending) => token.attributes.reason === `${ending.type}:${ending.id}`
-        )
+        token.attributes.reason === start.id ||
+        endings.some((ending) => token.attributes.reason === ending.id)
     )
     .outerJoin(
       doc.where((annotation) => is(annotation, schema.Newline)).as("newlines"),
@@ -41,8 +39,8 @@ export function createMarkupFromQuotes(doc: Document) {
         }
         let parseTokens = tokens.filter((token) => {
           return (
-            token.attributes.reason === `${start.type}:${start.id}` ||
-            (end && token.attributes.reason === `${ending.type}:${ending.id}`)
+            token.attributes.reason === start.id ||
+            (end && token.attributes.reason === ending.id)
           );
         });
         let markup =
@@ -78,7 +76,7 @@ export function createMarkupFromQuotes(doc: Document) {
               new ParseAnnotation({
                 ...token,
                 attributes: {
-                  reason: `${markup[0].type}:${markup[0].id}`,
+                  reason: markup[0].id,
                 },
               })
           )
